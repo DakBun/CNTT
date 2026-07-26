@@ -15,6 +15,7 @@ _CATEGORICAL_COLS = [
     "SOComm",
     "SOPartFreq",
     "SOVisitFreq",
+    "remote_work",
 ]
 
 _MULTISELECT_COLS = [
@@ -22,11 +23,10 @@ _MULTISELECT_COLS = [
     "databases_used",
     "webframes_used",
     "languages_wanted",
-    "remote_work",
 ]
 
 
-def explode_multiselect(df: pd.DataFrame, column: str, sep: str = ";") -> pd.DataFrame:
+def explode_multiselect(df: pd.DataFrame, column: str, sep: str = ';') -> pd.DataFrame:
     """
     Tách 1 cột chứa nhiều giá trị nối bằng dấu ';' thành nhiều dòng (long format),
     mỗi dòng 1 giá trị. Dùng cho các cột như languages_used, databases_used,
@@ -49,25 +49,18 @@ def explode_multiselect(df: pd.DataFrame, column: str, sep: str = ";") -> pd.Dat
         return df
 
     # Tách theo sep, strip khoảng trắng thừa và loại bỏ giá trị rỗng
-    exploded_series = (
+    df[column] = (
         df[column]
         .astype("string")
         .str.split(sep)
         .apply(lambda lst: [item.strip() for item in lst] if isinstance(lst, list) else lst)
         .apply(lambda lst: [item for item in lst if isinstance(item, str) and item] if isinstance(lst, list) else lst)
-        .explode()
-        .rename(column)
     )
 
-    # Lấy các cột còn lại theo thứ tự index của series đã explode.
-    # Dùng loc với duplicate labels để tránh lỗi reindex trên duplicate index.
-    others = df.drop(columns=[column]).loc[exploded_series.index]
+    # explode đơn giản, ignore_index=True tự reset index
+    df = df.explode(column, ignore_index=True)
 
-    others[column] = exploded_series
-    others = others.reset_index(drop=True)
-
-    return others
-
+    return df
 
 def filter_salary_outliers(
     df: pd.DataFrame,

@@ -53,4 +53,9 @@ COLUMN_MAPPING = {
     "SOPartFreq": "SOPartFreq",
     "SOVisitFreq": "SOVisitFreq",
     "YearsCode": "YearsCode",
+"LanguageDesireNextYear": "languages_wanted",
+    "LanguageWantToWorkWith": "languages_wanted",
+    "WorkRemote": "remote_work",
+    "RemoteWork": "remote_work",
+
 }
