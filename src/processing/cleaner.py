@@ -1,6 +1,29 @@
-﻿"""Data cleaning utilities for survey DataFrames."""
+"""Data cleaning utilities for survey DataFrames."""
 
 import pandas as pd
+
+
+_CATEGORICAL_COLS = [
+    "Age",
+    "Country",
+    "DevType",
+    "EdLevel",
+    "Employment",
+    "MainBranch",
+    "OrgSize",
+    "SOAccount",
+    "SOComm",
+    "SOPartFreq",
+    "SOVisitFreq",
+]
+
+_MULTISELECT_COLS = [
+    "languages_used",
+    "databases_used",
+    "webframes_used",
+    "languages_wanted",
+    "remote_work",
+]
 
 
 def explode_multiselect(df: pd.DataFrame, column: str, sep: str = ";") -> pd.DataFrame:
@@ -20,7 +43,30 @@ def explode_multiselect(df: pd.DataFrame, column: str, sep: str = ";") -> pd.Dat
         pd.DataFrame: DataFrame ở dạng long với các cột gốc được giữ lại,
         trừ cột bị explode bị thay thế bằng giá trị từng dòng.
     """
-    raise NotImplementedError
+    df = df.copy()
+
+    if column not in df.columns:
+        return df
+
+    # Tách theo sep, strip khoảng trắng thừa và loại bỏ giá trị rỗng
+    exploded_series = (
+        df[column]
+        .astype("string")
+        .str.split(sep)
+        .apply(lambda lst: [item.strip() for item in lst] if isinstance(lst, list) else lst)
+        .apply(lambda lst: [item for item in lst if isinstance(item, str) and item] if isinstance(lst, list) else lst)
+        .explode()
+        .rename(column)
+    )
+
+    # Lấy các cột còn lại theo thứ tự index của series đã explode.
+    # Dùng loc với duplicate labels để tránh lỗi reindex trên duplicate index.
+    others = df.drop(columns=[column]).loc[exploded_series.index]
+
+    others[column] = exploded_series
+    others = others.reset_index(drop=True)
+
+    return others
 
 
 def filter_salary_outliers(
@@ -44,7 +90,32 @@ def filter_salary_outliers(
         pd.DataFrame: DataFrame đã loại bỏ các dòng lương phi thực tế,
         giữ lại NaN.
     """
-    raise NotImplementedError
+    df = df.copy()
+
+    if salary_col not in df.columns:
+        return df
+
+    keep_mask = pd.Series(True, index=df.index)
+    valid_salary = df.loc[df[salary_col].notna(), salary_col]
+
+    if method == "iqr":
+        q1 = valid_salary.quantile(0.25)
+        q3 = valid_salary.quantile(0.75)
+        iqr = q3 - q1
+        lower = q1 - 1.5 * iqr
+        upper = q3 + 1.5 * iqr
+        keep_mask = df[salary_col].isna() | df[salary_col].between(lower, upper, inclusive="both")
+    elif method == "percentile":
+        lower = valid_salary.quantile(0.01)
+        upper = valid_salary.quantile(0.99)
+        keep_mask = df[salary_col].isna() | df[salary_col].between(lower, upper, inclusive="both")
+    else:
+        raise ValueError(
+            f"Phương pháp lọc outlier không hợp lệ: {method}. Chỉ hỗ trợ 'iqr' hoặc 'percentile'."
+        )
+
+    df = df.loc[keep_mask].reset_index(drop=True)
+    return df
 
 
 def clean_missing(df: pd.DataFrame) -> pd.DataFrame:
@@ -61,4 +132,22 @@ def clean_missing(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: DataFrame đã xử lý missing theo từng nhóm cột,
         giữ nguyên cấu trúc và các cột đa lựa chọn.
     """
-    raise NotImplementedError
+    df = df.copy()
+
+    for col in _CATEGORICAL_COLS:
+        if col in df.columns:
+            df[col] = df[col].fillna("Không trả lời")
+
+    years_col = 'YearsCode'
+    if years_col in df.columns:
+        mapped = df[years_col].replace({
+            'Less than 1 year': '0',
+            'More than 50 years': '51',
+        })
+        df[years_col] = pd.to_numeric(mapped, errors='coerce')
+
+    for col in _MULTISELECT_COLS:
+        if col in df.columns:
+            pass
+
+    return df
