@@ -66,28 +66,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Cách chạy notebook
+## Cách chạy
 
-```powershell
-jupyter notebook
-```
-
-Mở file `.ipynb` trong thư mục `notebooks/` để bắt đầu phân tích.
-
-Lưu ý: nếu `jupyter notebook` bị lỗi cài đặt (timeout mạng), có thể chạy trực tiếp các module bằng:
+Chạy trực tiếp một đoạn script Python bằng VS Code:
 
 ```powershell
 .venv\Scripts\python.exe -c "from src.ingestion.survey_loader import load_all_years; df = load_all_years([2019, 2022, 2025]); print(df.shape)"
 ```
 
-hoặc chỉ cài `ipykernel` (nhẹ hơn `jupyter` đầy đủ) nếu dùng notebook trong VS Code.
-
-## Ghi chú
-
-- Không commit dữ liệu lớn trong `data/raw/` (đã cấu hình `.gitignore`).
-- Sử dụng `src/config.py` để đảm bảo đường dẫn nhất quán, KHÔNG hard-code tuyệt đối.
-- Tuân theo kiến trúc layered: `ingestion -> processing -> analysis -> visualization`.
-
+Hoặc chạy trực tiếp file `.py` bằng nút **Run** trong VS Code.
 ## Trạng thái hiện tại
 
 - [x] Thu thập dữ liệu SO Survey (2019, 2022, 2025) — đã xác minh đúng năm qua số dòng dữ liệu

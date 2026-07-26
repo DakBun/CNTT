@@ -1,0 +1,2 @@
+﻿Môi trường:
+- Dự án này KHÔNG dùng Jupyter/notebook dưới bất kỳ hình thức nào — không được đề xuất cài jupyter, ipykernel, hay tạo file .ipynb trong bất kỳ lượt làm việc nào sau này, kể cả khi có vẻ tiện hơn.
