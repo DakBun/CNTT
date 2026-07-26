@@ -1,5 +1,10 @@
 ﻿"""Central configuration for paths and constants."""
 
+# Mọi script/notebook chạy từ project root phải thêm project root (không phải thư mục src/)
+# vào sys.path trước khi import, ví dụ:
+#   sys.path.insert(0, str(Path(__file__).resolve().parents[N]))
+# trỏ tới thư mục chứa src/, rồi import as `from src.ingestion.survey_loader import load_all_years`.
+
 from pathlib import Path
 
 # Base directory of the repository
@@ -24,17 +29,17 @@ SURVEY_YEARS = {
 }
 
 COLUMN_MAPPING = {
-    # Lương
+    # Luong
     "ConvertedComp": "salary_usd",
     "ConvertedCompYearly": "salary_usd",
-    # Ngôn ngữ / Database / Webframe đã dùng
+    # Ng?n ng? / Database / Webframe da d?ng
     "LanguageWorkedWith": "languages_used",
     "LanguageHaveWorkedWith": "languages_used",
     "DatabaseWorkedWith": "databases_used",
     "DatabaseHaveWorkedWith": "databases_used",
     "WebframeWorkedWith": "webframes_used",
     "WebframeHaveWorkedWith": "webframes_used",
-    # 13 cột tên giống nhau ở cả 3 năm — giữ nguyên tên
+    # 13 c?t t?n gi?ng nhau ? c? 3 nam - gi? nguy?n t?n
     "Age": "Age",
     "CompTotal": "CompTotal",
     "Country": "Country",
