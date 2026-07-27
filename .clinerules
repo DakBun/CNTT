@@ -16,6 +16,10 @@ Quy ước code:
   tự phê duyệt cách làm), được viết luôn không cần hỏi lại.
 - Mọi hàm vẫn phải có docstring rõ ràng và comment tiếng Việt giải thích
   từng bước — người dùng cần đọc hiểu để giải thích lại khi vấn đáp.
+- Các thao tác không thể hoàn tác hoặc ảnh hưởng đến remote dùng chung
+  (force push, xóa branch, rewrite history bằng filter-repo/rebase) LUÔN phải
+  hỏi ý kiến và đợi xác nhận trước khi thực thi, kể cả khi đã được cho phép
+  viết logic tự do.
 - Sau khi viết xong: BẮT BUỘC theo đúng thứ tự (1) dán nguyên "git diff"
   TRƯỚC khi commit, (2) chạy test thật và dán NGUYÊN output console, không
   tự tóm tắt hay diễn giải thay cho bằng chứng thật, (3) chỉ commit sau khi
