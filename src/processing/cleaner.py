@@ -26,6 +26,26 @@ _MULTISELECT_COLS = [
 ]
 
 
+REMOTE_WORK_GROUPS = {
+    "All or almost all the time (I'm full-time remote)": "Toàn thời gian từ xa",
+    "Fully remote": "Toàn thời gian từ xa",
+    "Remote": "Toàn thời gian từ xa",
+    "More than half, but not all, the time": "Hybrid",
+    "About half the time": "Hybrid",
+    "Less than half the time, but at least one day each week": "Hybrid",
+    "Hybrid (some remote, some in-person)": "Hybrid",
+    "Hybrid (some in-person, leans heavy to flexibility)": "Hybrid",
+    "Hybrid (some remote, leans heavy to in-person)": "Hybrid",
+    "A few days each month": "Hầu như tại văn phòng",
+    "Less than once per month / Never": "Hầu như tại văn phòng",
+    "Full in-person": "Hầu như tại văn phòng",
+    "In-person": "Hầu như tại văn phòng",
+    "It's complicated": "Khác/linh hoạt",
+    "Your choice (very flexible, you can come in when you want or just as needed)": "Khác/linh hoạt",
+    "Không trả lời": "Không trả lời",
+}
+
+
 def explode_multiselect(df: pd.DataFrame, column: str, sep: str = ';') -> pd.DataFrame:
     """
     Tách 1 cột chứa nhiều giá trị nối bằng dấu ';' thành nhiều dòng (long format),
@@ -108,6 +128,34 @@ def filter_salary_outliers(
         )
 
     df = df.loc[keep_mask].reset_index(drop=True)
+    return df
+
+
+def normalize_remote_work(df: pd.DataFrame, col: str = 'remote_work') -> pd.DataFrame:
+    """
+    Gộp các giá trị remote_work chi tiết (khác nhau giữa các năm khảo sát)
+    thành 4 nhóm chung để so sánh xuyên năm: "Toàn thời gian từ xa", "Hybrid",
+    "Hầu như tại văn phòng", "Khác/linh hoạt", "Không trả lời". Giữ lại bản
+    chi tiết gốc ở cột `{col}_detail` để phân tích sâu hơn nếu cần, còn cột
+    gốc `col` được ghi đè bằng bản đã gộp nhóm.
+
+    Args:
+        df: DataFrame đầu vào (sau clean_missing()).
+        col: Tên cột remote work cần gộp nhóm, mặc định "remote_work".
+
+    Returns:
+        pd.DataFrame: DataFrame có thêm cột {col}_detail (bản gốc) và
+        cột col đã được map sang 4 nhóm chung. Giá trị không có trong
+        REMOTE_WORK_GROUPS giữ nguyên NaN, không raise lỗi.
+    """
+    df = df.copy()
+
+    if col not in df.columns:
+        return df
+
+    df[f'{col}_detail'] = df[col]
+    df[col] = df[col].map(REMOTE_WORK_GROUPS)
+
     return df
 
 
