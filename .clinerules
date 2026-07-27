@@ -3,3 +3,14 @@
 
 Quy ước code:
 - Mọi file chứa tiếng Việt (comment, docstring, chuỗi hiển thị) phải ghi bằng UTF-8 tường minh. Sau khi ghi/sửa file có tiếng Việt, luôn đọc lại và kiểm tra không có ký tự '?' thay thế dấu trước khi commit.
+
+
+## Chính sách viết code
+- Cline được viết đầy đủ logic nghiệp vụ ở mọi lớp, không cần hỏi trước.
+- Mọi hàm vẫn phải có docstring rõ ràng (mô tả, tham số, giá trị trả về) và
+  comment tiếng Việt giải thích từng bước — người dùng cần đọc hiểu được để
+  giải thích lại khi vấn đáp, dù không tự viết.
+- Sau mỗi thay đổi quan trọng, BẮT BUỘC theo đúng thứ tự: (1) dán nguyên
+  "git diff" TRƯỚC khi commit, (2) chạy test thật và dán NGUYÊN output
+  console, không tự tóm tắt hay diễn giải thay cho bằng chứng thật, (3) chỉ
+  commit sau khi đã dán cả 2 thứ trên.
