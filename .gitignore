@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -31,3 +31,6 @@ dist/
 build/
 *.egg-info/
 data/raw/_archive/
+
+data/raw/*/*.csv
+
