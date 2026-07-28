@@ -2,6 +2,8 @@
 
 import pandas as pd
 
+from src.processing.cleaner import explode_multiselect
+
 
 # Định nghĩa khoảng kinh nghiệm để phân nhóm YearsCode
 _YEARS_CODE_BINS = [0, 2, 5, 10, 20, float("inf")]
@@ -163,3 +165,53 @@ def analyze_remote_work(df: pd.DataFrame, group_col: str | None = None) -> pd.Da
     grouped["pct"] = (grouped["pct"] * 100).round(1)
 
     return grouped
+
+
+def compare_vn_vs_global_skills(
+    vn_df: pd.DataFrame,
+    global_df: pd.DataFrame,
+    vn_skill_col: str = "required_skills",
+    global_skill_col: str = "languages_used",
+) -> pd.DataFrame:
+    """
+    So sánh tần suất kỹ năng giữa dữ liệu VN và dữ liệu toàn cầu.
+
+    Cả 2 cột đầu vào đều là dạng multi-select ngăn cách bằng ';'.
+    Hàm sẽ explode, tính % tần suất từng kỹ năng ở mỗi bên, rồi merge
+    và tính chênh lệch (VN - global).
+
+    Args:
+        vn_df: DataFrame chứa dữ liệu tin tuyển dụng VN (ví dụ đầu ra từ
+            ``load_manual_vn_jobs()``).
+        global_df: DataFrame chứa dữ liệu khảo sát toàn cầu đã explode
+            hoặc chưa, chỉ cần có cột ``global_skill_col``.
+        vn_skill_col: Tên cột kỹ năng trong ``vn_df``, mặc định
+            ``required_skills``.
+        global_skill_col: Tên cột kỹ năng trong ``global_df``, mặc định
+            ``languages_used``.
+
+    Returns:
+        pd.DataFrame: Bảng đã sort theo chênh lệch giảm dần, gồm các cột
+        ``pct_vn``, ``pct_global``, ``gap``.
+    """
+    vn_exploded = explode_multiselect(vn_df, vn_skill_col)
+    global_exploded = explode_multiselect(global_df, global_skill_col)
+
+    vn_counts = (
+        vn_exploded[vn_skill_col]
+        .dropna()
+        .value_counts(normalize=True)
+        .mul(100)
+        .rename("pct_vn")
+    )
+    global_counts = (
+        global_exploded[global_skill_col]
+        .dropna()
+        .value_counts(normalize=True)
+        .mul(100)
+        .rename("pct_global")
+    )
+
+    merged = pd.concat([vn_counts, global_counts], axis=1).fillna(0)
+    merged["gap"] = merged["pct_vn"] - merged["pct_global"]
+    return merged.sort_values("gap", ascending=False).reset_index().rename(columns={"index": "skill"})

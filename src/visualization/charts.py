@@ -150,6 +150,13 @@ def plot_salary_boxplot(
 
     top_groups = df[group_col].value_counts().head(top_n).index
     sub = df[df[group_col].isin(top_groups) & df[salary_col].notna()]
+
+    # Chỉ giữ nhóm thực sự có dữ liệu lương, tránh pandas boxplot lỗi rỗng
+    if sub.empty:
+        return
+    valid_groups = sub[group_col].value_counts().index
+    sub = sub[sub[group_col].isin(valid_groups)]
+
     fig, ax = plt.subplots(figsize=(9, 5))
     sub.boxplot(column=salary_col, by=group_col, ax=ax, rot=35, grid=False)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=35, ha="right")
@@ -159,3 +166,4 @@ def plot_salary_boxplot(
     plt.suptitle("")
     fig.savefig(output_path, bbox_inches="tight", dpi=150)
     plt.close(fig)
+
