@@ -34,3 +34,6 @@ data/raw/_archive/
 
 data/raw/*/*.csv
 
+
+figures/
+
