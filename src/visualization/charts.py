@@ -5,6 +5,7 @@ import pandas as pd
 from pathlib import Path
 
 from src.config import FIGURES_DIR
+from src.processing.cleaner import normalize_edlevel
 
 
 def plot_salary_trend(
@@ -29,11 +30,9 @@ def plot_salary_trend(
     fig, ax = plt.subplots(figsize=(8, 5))
 
     if group_col is None:
-        # Nhóm chung theo năm và tính trung vị
         trend = df.groupby("survey_year")[salary_col].median()
         ax.plot(trend.index, trend.values, marker="o")
     else:
-        # Tách theo từng nhóm và vẽ từng đường
         for key, sub in df.groupby(group_col):
             trend = sub.groupby("survey_year")[salary_col].median()
             ax.plot(trend.index, trend.values, marker="o", label=str(key))
@@ -54,8 +53,6 @@ def plot_tech_popularity(
 ) -> None:
     """
     Vẽ biểu đồ cột ngang thể hiện top N công nghệ phổ biến nhất.
-
-    Dùng cho DataFrame dạng long sau khi explode cột đa lựa chọn.
 
     Args:
         df: DataFrame dạng long, ví dụ kết quả ``explode_multiselect()``.
@@ -118,6 +115,8 @@ def plot_education_distribution(
                          Ví dụ: ``FIGURES_DIR / "education.png"``.
         education_col: Tên cột trình độ học vấn.
     """
+    df = normalize_edlevel(df, education_col)
+
     counts = df.groupby(["survey_year", education_col]).size().unstack(fill_value=0)
     fig, ax = plt.subplots(figsize=(9, 5))
     counts.plot(kind="bar", ax=ax)
@@ -147,10 +146,13 @@ def plot_salary_boxplot(
         salary_col: Tên cột lương chuẩn hóa.
         top_n: Số nhóm giữ lại dựa trên tần suất xuất hiện.
     """
+    df = normalize_edlevel(df, group_col)
+
     top_groups = df[group_col].value_counts().head(top_n).index
     sub = df[df[group_col].isin(top_groups) & df[salary_col].notna()]
     fig, ax = plt.subplots(figsize=(9, 5))
-    sub.boxplot(column=salary_col, by=group_col, ax=ax, rot=30)
+    sub.boxplot(column=salary_col, by=group_col, ax=ax, rot=35, grid=False)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=35, ha="right")
     ax.set_xlabel(group_col)
     ax.set_ylabel("Lương (USD)")
     ax.set_title(f"Phân phối lương theo {group_col} (top {top_n} nhóm đông nhất)")

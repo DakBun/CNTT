@@ -159,6 +159,53 @@ def normalize_remote_work(df: pd.DataFrame, col: str = 'remote_work') -> pd.Data
     return df
 
 
+EDLEVEL_GROUPS = {
+    "Associate degree": "Associate degree",
+    "Associate degree (A.A., A.S., etc.)": "Associate degree",
+    "Bachelor's degree (B.A., B.S., B.Eng., etc.)": "Bachelor's degree",
+    "Bachelor's degree (BA, BS, B.Eng., etc.)": "Bachelor's degree",
+    "Master's degree (M.A., M.S., M.Eng., MBA, etc.)": "Master's degree",
+    "Master's degree (MA, MS, M.Eng., MBA, etc.)": "Master's degree",
+    "Other doctoral degree (Ph.D, Ed.D., etc.)": "Other doctoral degree",
+    "Other doctoral degree (Ph.D., Ed.D., etc.)": "Other doctoral degree",
+    "Professional degree (JD, MD, Ph.D, Ed.D, etc.)": "Professional degree",
+    "Professional degree (JD, MD, etc.)": "Professional degree",
+    "Other (please specify):": "Khác",
+    "Something else": "Khác",
+    "I never completed any formal education": "Chưa qua giáo dục chính quy",
+    "Primary/elementary school": "Tiểu học",
+    "Secondary school (e.g. American high school, German Realschule or Gymnasium, etc.)": "Trung học",
+    "Some college/university study without earning a degree": "Học ĐH chưa có bằng",
+    "Không trả lời": "Không trả lời",
+}
+
+
+def normalize_edlevel(df: pd.DataFrame, col: str = "EdLevel") -> pd.DataFrame:
+    """
+    Gộp các giá trị EdLevel chi tiết (khác nhau giữa các năm khảo sát)
+    thành các nhóm chung. Giữ lại bản chi tiết gốc ở cột `{col}_detail`,
+    cột `col` được ghi đè bằng bản đã gộp nhóm.
+
+    Args:
+        df: DataFrame đầu vào.
+        col: Tên cột trình độ học vấn, mặc định "EdLevel".
+
+    Returns:
+        pd.DataFrame: DataFrame có thêm cột {col}_detail và cột {col}
+        đã map sang nhóm chuẩn. Giá trị không có trong EDLEVEL_GROUPS
+        giữ nguyên NaN.
+    """
+    df = df.copy()
+
+    if col not in df.columns:
+        return df
+
+    df[f"{col}_detail"] = df[col]
+    df[col] = df[col].map(EDLEVEL_GROUPS)
+
+    return df
+
+
 def clean_missing(df: pd.DataFrame) -> pd.DataFrame:
     """
     Xử lý giá trị thiếu cho các cột chính (13 cột chung + salary_usd). Không
