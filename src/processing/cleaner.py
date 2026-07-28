@@ -200,6 +200,11 @@ def normalize_edlevel(df: pd.DataFrame, col: str = "EdLevel") -> pd.DataFrame:
     if col not in df.columns:
         return df
 
+    # Nếu giá trị gốc là dấu nháy đơn in ấn (U+2019) thì chuyển về ASCII
+    # để khớp với key trong EDLEVEL_GROUPS
+    if pd.api.types.is_string_dtype(df[col]) or df[col].dtype == 'object':
+        df[col] = df[col].astype('string').str.replace('’', "'", regex=False)
+
     df[f"{col}_detail"] = df[col]
     df[col] = df[col].map(EDLEVEL_GROUPS)
 
