@@ -19,6 +19,11 @@ def load_single_year(year: int) -> pd.DataFrame:
     """
     path = SURVEY_YEARS[year]
     df = pd.read_csv(path)
+
+    # Chu?n h�a d?u nh�y ?on ki?u in ?n (’, U+2019) v? d?u nh�y ASCII (') d? x? l� to�n c?c
+    for col in df.select_dtypes(include="object").columns:
+        df[col] = df[col].str.replace("’", "'", regex=False)
+
     df["survey_year"] = year
     return df
 
