@@ -1,0 +1,6 @@
+﻿job_title,company,required_skills,location,posted_date
+Backend Developer,ABC Tech,"Python;Django;PostgreSQL","Ha Noi",2025-01-15
+Frontend Developer,XYZ Corp,"JavaScript;React;HTML/CSS","Ho Chi Minh",2025-01-14
+Fullstack Developer,Startup XYZ,"Python;React;Docker;AWS","Ha Noi",2025-01-13
+Data Engineer,DataCorp,"Python;SQL;Spark;AWS","Ho Chi Minh",2025-01-12
+DevOps Engineer,CloudNinja,"Docker;Kubernetes;AWS;Terraform","Da Nang",2025-01-11
