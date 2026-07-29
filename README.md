@@ -124,6 +124,20 @@ python -c "from src.ingestion.sql_loader import load_to_sql_server; load_to_sql_
 
 Kết nối mặc định: `localhost\SQLEXPRESS`, Windows Authentication, database `DT20_CNTT` (tự tạo nếu chưa có).
 
+## Dashboard (Streamlit)
+
+Chạy 1 lần để tạo cache dữ liệu:
+```powershell
+.venv\Scripts\python.exe scripts\build_processed_cache.py
+```
+
+Sau đó mở dashboard:
+```powershell
+.venv\Scripts\python.exe -m streamlit run dashboard.py
+```
+
+Dashboard tự mở trên trình duyệt tại `http://localhost:8501`.
+
 ## Hạn chế đã biết
 
 - Cỡ mẫu tin tuyển dụng VN nhỏ (5 tin) — kết quả so sánh VN vs toàn cầu chỉ mang tính minh họa, chưa đủ khái quát hóa.

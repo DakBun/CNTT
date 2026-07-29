@@ -43,8 +43,19 @@ def main() -> None:
     # Bước 3 - Thống kê tổng quan
     print("[3/5] Thống kê tổng quan...")
     summary = compute_summary(df)
-    for key, value in summary.items():
-        print(f"- {key}: {value}")
+    print(f"- Tổng số dòng: {summary['n_rows']}")
+    print(f"- Tổng số cột: {summary['n_cols']}")
+    print(f"- Lương trung vị: {summary['salary_stats'].get('50%', 'N/A')}")
+    print(f"- Năm phân bố: {summary['year_distribution']}")
+    print("- Cột dự án có tỷ lệ thiếu cao nhất:")
+    focus_cols = [
+        "salary_usd", "languages_used", "languages_wanted", "databases_used",
+        "webframes_used", "remote_work", "EdLevel", "Country", "DevType",
+        "YearsCode", "OrgSize", "Age",
+    ]
+    missing_focus = {c: summary["missing_pct"].get(c, 0) for c in focus_cols}
+    for col, pct in sorted(missing_focus.items(), key=lambda x: x[1], reverse=True)[:10]:
+        print(f"  - {col}: {pct*100:.1f}%")
 
     # Bước 4 - Vẽ biểu đồ
     print("[4/5] Đang vẽ 5 biểu đồ...")
