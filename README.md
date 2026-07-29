@@ -75,7 +75,13 @@ pip install -r requirements.txt
 
 ## Cách chạy
 
-Chạy trực tiếp một đoạn script Python bằng VS Code:
+Chạy toàn bộ pipeline với tiến độ:
+
+```powershell
+.venv\Scripts\python.exe main.py
+```
+
+Hoặc chạy từng đoạn script nhỏ:
 
 ```powershell
 .venv\Scripts\python.exe -c "from src.ingestion.survey_loader import load_all_years; df = load_all_years([2019, 2022, 2025]); print(df.shape)"
