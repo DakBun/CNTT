@@ -104,7 +104,7 @@ Thư mục `figures/` không được commit (đã gitignore) — chạy lệnh 
 
 Yêu cầu: SQL Server Express/LocalDB + ODBC Driver 17, cài qua:
 ```
-pip install sqlalchemy
+pip install pyodbc sqlalchemy
 ```
 
 (`pyodbc` cố ý KHÔNG đưa vào requirements.txt vì cần driver ODBC hệ thống — chỉ cài khi muốn dùng phần SQL Server.)
