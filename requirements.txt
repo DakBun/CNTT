@@ -1,4 +1,4 @@
-pandas
+﻿pandas
 numpy
 matplotlib
 seaborn
@@ -7,4 +7,4 @@ beautifulsoup4
 lxml
 python-dotenv
 openpyxl
-
+sqlalchemy
