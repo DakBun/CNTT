@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+import altair as alt
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -82,12 +83,18 @@ def main() -> None:
         c1, c2 = st.columns(2)
         with c1:
             st.caption("Đã dùng (top 15)")
-            chart_used = used_demand.set_index("languages_used")["count"].sort_values()
-            st.bar_chart(chart_used, horizontal=True)
+            ch = alt.Chart(used_demand).mark_bar().encode(
+                x=alt.X("count:Q", title="Số lượt", scale=alt.Scale(domainMin=0)),
+                y=alt.Y("languages_used:N", title=None, sort="-x"),
+            )
+            st.altair_chart(ch, use_container_width=True)
         with c2:
             st.caption("Muốn học (top 15)")
-            chart_wanted = wanted_demand.set_index("languages_wanted")["count"].sort_values()
-            st.bar_chart(chart_wanted, horizontal=True)
+            ch = alt.Chart(wanted_demand).mark_bar().encode(
+                x=alt.X("count:Q", title="Số lượt", scale=alt.Scale(domainMin=0)),
+                y=alt.Y("languages_wanted:N", title=None, sort="-x"),
+            )
+            st.altair_chart(ch, use_container_width=True)
 
         used_full = used["languages_used"].dropna().value_counts(normalize=True).mul(100).rename("pct_used")
         wanted_full = wanted["languages_wanted"].dropna().value_counts(normalize=True).mul(100).rename("pct_wanted")
@@ -118,8 +125,12 @@ def main() -> None:
         else:
             salary_df = view
         salary_table = analyze_salary_by_group(salary_df, group_col)
-        chart_salary = salary_table.groupby(group_col)["median"].mean().sort_values()
-        st.bar_chart(chart_salary, horizontal=True)
+        salary_chart_df = salary_table.groupby(group_col, as_index=False)["median"].mean()
+        ch = alt.Chart(salary_chart_df).mark_bar().encode(
+            x=alt.X("median:Q", title="Lương trung vị (USD)", scale=alt.Scale(domainMin=0)),
+            y=alt.Y(f"{group_col}:N", title=None, sort="-x"),
+        )
+        st.altair_chart(ch, use_container_width=True)
         salary_display = salary_table.rename(columns={
             "survey_year": "Năm", group_col: group_col, "median": "Lương trung vị", "count": "Số phản hồi"
         })
@@ -131,14 +142,12 @@ def main() -> None:
         remote_display = remote_table.rename(columns={
             "survey_year": "Năm", "remote_work": "Hình thức", "pct": "Tỷ lệ (%)"
         })
-        pivot = (
-            remote_table.pivot_table(
-                index="remote_work", columns="survey_year", values="pct"
-            )
-            .fillna(0)
-            .sort_values(view["survey_year"].max(), ascending=False)
+        ch = alt.Chart(remote_table).mark_bar().encode(
+            x=alt.X("pct:Q", title="Tỷ lệ (%)", scale=alt.Scale(domain=[0, 100])),
+            y=alt.Y("survey_year:O", title="Năm"),
+            color=alt.Color("remote_work:N", title="Hình thức"),
         )
-        st.bar_chart(pivot.T, horizontal=True)
+        st.altair_chart(ch, use_container_width=True)
         st.dataframe(remote_display.reset_index(drop=True), use_container_width=True, hide_index=True)
 
     with tabs[3]:
@@ -146,8 +155,12 @@ def main() -> None:
         edu_table = (
             view.groupby(["survey_year", "EdLevel"]).size().reset_index(name="count")
         )
-        pivot_edu = edu_table.pivot(index="EdLevel", columns="survey_year", values="count").fillna(0)
-        st.bar_chart(pivot_edu.T, horizontal=True)
+        ch = alt.Chart(edu_table).mark_bar().encode(
+            x=alt.X("count:Q", title="Số phản hồi", scale=alt.Scale(domainMin=0)),
+            y=alt.Y("EdLevel:N", title=None, sort="-x"),
+            color=alt.Color("survey_year:O", title="Năm"),
+        )
+        st.altair_chart(ch, use_container_width=True)
         edu_display = edu_table.rename(columns={
             "survey_year": "Năm", "EdLevel": "Trình độ", "count": "Số phản hồi"
         })
