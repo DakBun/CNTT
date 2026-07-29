@@ -81,11 +81,13 @@ def main() -> None:
 
         c1, c2 = st.columns(2)
         with c1:
-            st.caption("Đã dùng")
-            st.bar_chart(used_demand.set_index("languages_used")["count"])
+            st.caption("Đã dùng (top 15)")
+            chart_used = used_demand.set_index("languages_used")["count"].sort_values()
+            st.bar_chart(chart_used, horizontal=True)
         with c2:
-            st.caption("Muốn học")
-            st.bar_chart(wanted_demand.set_index("languages_wanted")["count"])
+            st.caption("Muốn học (top 15)")
+            chart_wanted = wanted_demand.set_index("languages_wanted")["count"].sort_values()
+            st.bar_chart(chart_wanted, horizontal=True)
 
         used_full = used["languages_used"].dropna().value_counts(normalize=True).mul(100).rename("pct_used")
         wanted_full = wanted["languages_wanted"].dropna().value_counts(normalize=True).mul(100).rename("pct_wanted")
@@ -93,7 +95,14 @@ def main() -> None:
         gap_table["gap"] = gap_table["pct_wanted"] - gap_table["pct_used"]
         gap_table = gap_table.sort_values("gap", ascending=False).reset_index().rename(columns={"index": "tech"})
         st.subheader("Chênh lệch nhu cầu: muốn học - đã dùng (%)")
-        st.dataframe(gap_table.round(2))
+        gap_display = gap_table.rename(columns={
+            "tech": "Công nghệ", "pct_used": "% đã dùng",
+            "pct_wanted": "% muốn học", "gap": "Chênh lệch"
+        }).round(2)
+        st.caption("10 công nghệ có nhu cầu học vượt mức sử dụng nhiều nhất")
+        st.dataframe(gap_display.head(10), use_container_width=True, hide_index=True)
+        st.caption("10 công nghệ đang giảm nhu cầu")
+        st.dataframe(gap_display.tail(10), use_container_width=True, hide_index=True)
 
     with tabs[1]:
         st.subheader("Phân tích lương")
@@ -109,12 +118,19 @@ def main() -> None:
         else:
             salary_df = view
         salary_table = analyze_salary_by_group(salary_df, group_col)
-        st.bar_chart(salary_table.groupby(group_col)["median"].mean().sort_values(ascending=False))
-        st.dataframe(salary_table.reset_index(drop=True))
+        chart_salary = salary_table.groupby(group_col)["median"].mean().sort_values()
+        st.bar_chart(chart_salary, horizontal=True)
+        salary_display = salary_table.rename(columns={
+            "survey_year": "Năm", group_col: group_col, "median": "Lương trung vị", "count": "Số phản hồi"
+        })
+        st.dataframe(salary_display.reset_index(drop=True), use_container_width=True, hide_index=True)
 
     with tabs[2]:
         st.subheader("Phân bố hình thức làm việc từ xa theo năm")
         remote_table = analyze_remote_work(view)
+        remote_display = remote_table.rename(columns={
+            "survey_year": "Năm", "remote_work": "Hình thức", "pct": "Tỷ lệ (%)"
+        })
         pivot = (
             remote_table.pivot_table(
                 index="remote_work", columns="survey_year", values="pct"
@@ -122,8 +138,8 @@ def main() -> None:
             .fillna(0)
             .sort_values(view["survey_year"].max(), ascending=False)
         )
-        st.bar_chart(pivot.T)
-        st.dataframe(remote_table.reset_index(drop=True))
+        st.bar_chart(pivot.T, horizontal=True)
+        st.dataframe(remote_display.reset_index(drop=True), use_container_width=True, hide_index=True)
 
     with tabs[3]:
         st.subheader("Phân bố trình độ học vấn theo năm")
@@ -131,8 +147,18 @@ def main() -> None:
             view.groupby(["survey_year", "EdLevel"]).size().reset_index(name="count")
         )
         pivot_edu = edu_table.pivot(index="EdLevel", columns="survey_year", values="count").fillna(0)
-        st.bar_chart(pivot_edu.T)
-        st.dataframe(edu_table.reset_index(drop=True))
+        st.bar_chart(pivot_edu.T, horizontal=True)
+        edu_display = edu_table.rename(columns={
+            "survey_year": "Năm", "EdLevel": "Trình độ", "count": "Số phản hồi"
+        })
+        st.dataframe(edu_display.reset_index(drop=True), use_container_width=True, hide_index=True)
+
+    st.divider()
+    st.caption(
+        "Nguồn: Stack Overflow Developer Survey 2019/2022/2025 (giấy phép ODbL). "
+        "Dữ liệu đã qua làm sạch: gộp schema 3 năm, lọc ngoại lai lương theo IQR, "
+        "chuẩn hóa nhóm hình thức làm việc và trình độ học vấn."
+    )
 
 
 if __name__ == "__main__":
