@@ -78,7 +78,25 @@ Hoặc chạy trực tiếp file `.py` bằng nút **Run** trong VS Code.
 ## Trạng thái hiện tại
 
 - [x] Thu thập dữ liệu SO Survey (2019, 2022, 2025) — đã xác minh đúng năm qua số dòng dữ liệu
-- [x] `load_all_years()` — gộp 3 năm thành 1 DataFrame (211,274 dòng x 277 cột)
-- [ ] `cleaner.py` — đang làm (explode multi-select, lọc outlier lương)
-- [ ] `vn_jobs_scraper.py` — đã có khung, chưa triển khai
-- [ ] `analyzer.py`, `charts.py` — chưa bắt đầu
+- [x] `load_all_years()` — gộp 3 năm thành 1 DataFrame (202,739 dòng)
+- [x] `cleaner.py` — hoàn thành (explode multi-select, lọc outlier lương, gộp nhóm remote_work/EdLevel)
+- [x] `analyzer.py` — hoàn thành (4 hàm phân tích chính + so sánh VN vs global)
+- [x] `charts.py` — hoàn thành (5 loại biểu đồ)
+- [x] `vn_jobs_manual.csv` — thu thập thủ công 5 tin (do scrape tự động ITviec/TopCV không khả thi — không có dữ liệu trong HTML thô, không có Algolia public). **LƯU Ý:** cỡ mẫu nhỏ, kết quả so sánh VN/global chỉ mang tính minh họa.
+- [x] Tích hợp SQL Server (nâng cao) — 4 bảng quan hệ, 4 câu demo GROUP BY/JOIN/window function/CTE+FULL JOIN — xem mục bên dưới
+
+## Phần nâng cao — SQL Server
+
+Yêu cầu: SQL Server Express/LocalDB + ODBC Driver 17, cài qua:
+```
+pip install pyodbc sqlalchemy
+```
+
+Đây là phần **MỞ RỘNG**, không ảnh hưởng pipeline pandas chính — máy không có SQL Server vẫn chạy được toàn bộ phần phân tích/báo cáo qua `src/analysis/analyzer.py` bình thường.
+
+Cách chạy:
+```powershell
+python -c "from src.ingestion.sql_loader import load_to_sql_server; load_to_sql_server()"
+```
+
+Kết nối mặc định: `localhost\SQLEXPRESS`, Windows Authentication, database `DT20_CNTT` (tự tạo nếu chưa có).

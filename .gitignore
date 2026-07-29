@@ -37,3 +37,9 @@ data/raw/*/*.csv
 
 figures/
 
+
+*.log
+load_*.txt
+sql*_out.txt
+sql*_err.txt
+
