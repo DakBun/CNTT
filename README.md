@@ -6,38 +6,49 @@ Dự án phân tích dữ liệu thị trường việc làm ngành CNTT sử d�
 
 ```
 CNTT/
-├── .gitignore
-├── .clinerules
-├── requirements.txt
-├── README.md
-├── notebooks/              # không sử dụng (dự án chạy bằng script .py, không dùng Jupyter)
-├── src/
-│   ├── config.py           # Hằng số đường dẫn dùng chung
-│   ├── ingestion/          # Lấy dữ liệu đầu vào
-│   │   ├── survey_loader.py
-│   │   ├── vn_jobs_scraper.py
-│   │   └── sql_loader.py
-│   ├── processing/         # Làm sạch và chuẩn hóa
-│   │   └── cleaner.py
-│   ├── analysis/           # Phân tích số liệu
-│   │   ├── analyzer.py
-│   │   └── sql_analyzer.py
-│   └── visualization/      # Vẽ biểu đồ xuất ra figures
-│       └── charts.py
+├── .clinerules                 # Quy tắc và chính sách cho Cline
+├── .env.example                # Mẫu biến môi trường
+├── .gitignore                  # Danh sách file/thư mục bị bỏ qua
+├── README.md                   # Tài liệu dự án
+├── dashboard.py                # Dashboard Streamlit 4 tab tương tác
+├── main.py                     # Chạy toàn bộ pipeline bằng 1 lệnh
+├── requirements.txt            # Danh sách dependencies Python
 ├── data/
-│   ├── raw/                # Dữ liệu thô từ survey / crawl
-│   ├── processed/          # Dữ liệu đã làm sạch
-│   └── external/           # Dữ liệu tham chiếu bên ngoài
-│       └── vn_jobs_manual.csv
-├── scripts/
-│   ├── load_respondent_skills_only.py
-│   └── setup_sql.py
-└── figures/                # Sinh biểu đồ, ảnh xuất ra
+│   ├── external/               # Dữ liệu tham chiếu bên ngoài
+│   │   └── vn_jobs_manual.csv  # 5 tin tuyển dụng VN thu thập thủ công
+│   ├── raw/                    # Dữ liệu thô SO Survey (survey_results_public.csv KHÔNG commit vì >100MB — phải tải tay, xem mục Nguồn dữ liệu)
+│   │   ├── 2019/               # Khảo sát SO 2019
+│   │   │   └── survey_results_schema.csv  # Mô tả câu hỏi khảo sát (đã commit, file nhẹ)
+│   │   ├── 2022/               # Khảo sát SO 2022
+│   │   │   └── survey_results_schema.csv
+│   │   └── 2025/               # Khảo sát SO 2025
+│   │       └── survey_results_schema.csv
+│   └── processed/              # Dữ liệu đã làm sạch (không commit — tự sinh khi chạy)
+│       └── dashboard_data.pkl  # Cache cho dashboard Streamlit
+├── scripts/                    # Script tiện ích
+│   ├── build_processed_cache.py    # Build cache dữ liệu cho dashboard
+│   ├── load_respondent_skills_only.py # Nạp respondent_skills vào SQL Server
+│   └── setup_sql.py            # Tạo database + bảng SQL Server
+├── figures/                    # Biểu đồ xuất ra (không commit — tự sinh khi chạy)
+└── src/                        # Mã nguồn chính
+    ├── config.py               # Hằng số đường dẫn và cấu hình
+    ├── analysis/               # Phân tích số liệu
+    │   ├── analyzer.py         # 5 hàm phân tích chính
+    │   └── sql_analyzer.py     # 4 câu demo SQL Server
+    ├── ingestion/              # Lấy dữ liệu đầu vào
+    │   ├── survey_loader.py    # Load 3 năm SO Survey + COLUMN_MAPPING
+    │   ├── vn_jobs_scraper.py  # Scraper VN jobs (chưa triển khai auto)
+    │   └── sql_loader.py       # Nạp dữ liệu vào SQL Server
+    ├── processing/             # Làm sạch và chuẩn hóa
+    │   └── cleaner.py          # explode, lọc outlier, gộp nhóm
+    └── visualization/          # Vẽ biểu đồ
+        └── charts.py           # 5 loại biểu đồ xuất ra figures/
 ```
 
 ## Nguồn dữ liệu
 
 - **Stack Overflow Developer Survey** các năm 2019, 2022, 2025 — tải qua Kaggle mirror (ghi rõ đây là bản mirror của dữ liệu chính thức survey.stackoverflow.co), giấy phép **Open Database License (ODbL)** — ghi nguồn khi trích dẫn kết quả.
+  - **Cách tải:** tìm "Stack Overflow Developer Survey [năm]" trên kaggle.com, tải và đặt file `survey_results_public.csv` vào đúng thư mục `data/raw/2019/`, `data/raw/2022/`, `data/raw/2025/`. Không có 3 file này thì `main.py` và `build_processed_cache.py` sẽ báo lỗi `FileNotFoundError`.
 - **Dữ liệu tuyển dụng CNTT Việt Nam**: thu thập thủ công 5 tin từ ITviec (`data/external/vn_jobs_manual.csv`). Việc cào tự động không khả thi — xem mục Hạn chế bên dưới.
 
 
