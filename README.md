@@ -98,13 +98,31 @@ Thư mục `figures/` không được commit (đã gitignore) — chạy lệnh 
 
 ## Trạng thái hiện tại
 
-- [x] Thu thập dữ liệu SO Survey (2019, 2022, 2025) — đã xác minh đúng năm qua số dòng dữ liệu
-- [x] `load_all_years()` — gộp 3 năm thành 1 DataFrame (211.274 dòng x 275 cột; còn 202.739 dòng sau khi lọc outlier lương)
-- [x] `cleaner.py` — hoàn thành (explode multi-select, lọc outlier lương, gộp nhóm remote_work/EdLevel)
-- [x] `analyzer.py` — hoàn thành (4 hàm phân tích chính + so sánh VN vs global)
-- [x] `charts.py` — hoàn thành (5 loại biểu đồ)
-- [x] `vn_jobs_manual.csv` — thu thập thủ công 5 tin (do scrape tự động ITviec/TopCV không khả thi — không có dữ liệu trong HTML thô, không có Algolia public). **LƯU Ý:** cỡ mẫu nhỏ, kết quả so sánh VN/global chỉ mang tính minh họa.
-- [x] Tích hợp SQL Server (nâng cao) — 4 bảng quan hệ, 4 câu demo GROUP BY/JOIN/window function/CTE+FULL JOIN — xem mục bên dưới
+### Phần kỹ thuật — hoàn thành
+- [x] Thu thập dữ liệu SO Survey 2019/2022/2025 — đã xác minh đúng năm qua số dòng (88.883 / 73.268 / 49.123)
+- [x] `survey_loader.py` — gộp 3 năm qua COLUMN_MAPPING (211.274 dòng x 275 cột), chuẩn hóa dấu nháy đơn toàn cục
+- [x] `cleaner.py` — explode multi-select, lọc ngoại lai lương (IQR), gộp nhóm `remote_work` (4 nhóm) và `EdLevel` (11 nhóm); còn 202.739 dòng sau lọc
+- [x] `analyzer.py` — 5 hàm: `compute_summary`, `analyze_salary_by_group`, `analyze_tech_demand`, `analyze_remote_work`, `compare_vn_vs_global_skills`
+- [x] `charts.py` — 5 loại biểu đồ (line, bar ngang, bar chồng, bar nhóm, boxplot), xuất ra `figures/`
+- [x] `main.py` — chạy toàn bộ pipeline bằng 1 lệnh, in tiến độ 5 bước
+- [x] Dashboard Streamlit — 4 tab tương tác (Công nghệ / Lương / Làm việc từ xa / Học vấn), filter theo năm và quốc gia
+- [x] Tích hợp SQL Server (nâng cao) — 4 bảng quan hệ, 4 câu demo GROUP BY / JOIN / window function / CTE+FULL OUTER JOIN
+- [x] Dữ liệu tuyển dụng VN — 5 tin thu thập thủ công (`data/external/vn_jobs_manual.csv`)
+
+### Phần báo cáo — đang thực hiện
+- [x] Mục 3 — Kết quả phân tích (đã có số liệu và diễn giải đầy đủ cho 4 câu hỏi phân tích)
+- [ ] Mục 1 — Giới thiệu
+- [ ] Mục 2 — Dữ liệu và phương pháp
+- [ ] Mục 4 — Hạn chế (có thể dùng lại mục "Hạn chế đã biết" cuối README này)
+- [ ] Mục 5 — Kết luận
+- [ ] Phụ lục — bảng phân công và tự đánh giá % đóng góp
+- [ ] Đóng gói file nộp (DOCX + PDF + mã nguồn + dữ liệu)
+
+### Câu hỏi phân tích đã trả lời
+1. Xếp hạng công nghệ đã dùng vs mong muốn học — Rust (+2,9đ%), Go (+2,7đ%), Kotlin (+1,6đ%) dẫn đầu chênh lệch nhu cầu
+2. Lương theo 4 chiều: kinh nghiệm, học vấn, quốc gia, ngôn ngữ lập trình
+3. So sánh VN/Đông Nam Á với thế giới — PHP phổ biến hơn tương đối ở khu vực
+4. Xu hướng làm việc từ xa 2019→2025 — tăng vọt 9,5%→34,6% (COVID-19) rồi giảm về 22,2%
 
 ## Phần nâng cao — SQL Server
 
