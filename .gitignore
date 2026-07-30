@@ -45,3 +45,5 @@ sql*_err.txt
 
 
 main_*.txt
+
+data/processed/*.pkl
