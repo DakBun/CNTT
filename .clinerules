@@ -1,5 +1,5 @@
 ﻿Môi trường:
-- Dự án này KHÔNG dùng Jupyter/notebook dưới bất kỳ hình thức nào — không được đề xuất cài jupyter, ipykernel, hay tạo file .ipynb trong bất kỳ lượt làm việc nào sau này, kể cả khi có vẻ tiện hơn.
+- Không đề xuất cài jupyter, ipykernel hay tạo file .ipynb trong các lượt làm việc thông thường, trừ khi người dùng có yêu cầu rõ ràng.
 
 Quy ước code:
 - Mọi file chứa tiếng Việt (comment, docstring, chuỗi hiển thị) phải ghi bằng UTF-8 tường minh. Sau khi ghi/sửa file có tiếng Việt, luôn đọc lại và kiểm tra không có ký tự '?' thay thế dấu trước khi commit.

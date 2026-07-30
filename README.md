@@ -135,6 +135,19 @@ Thư mục `figures/` không được commit (đã gitignore) — chạy lệnh 
 3. So sánh VN/Đông Nam Á với thế giới — PHP phổ biến hơn tương đối ở khu vực
 4. Xu hướng làm việc từ xa 2019→2025 — tăng vọt 9,5%→34,6% (COVID-19) rồi giảm về 22,2%
 
+## Notebook nộp bài
+
+File `notebooks/BTL_DT20.ipynb` là lớp vỏ mỏng gọi lại các module có sẵn, chạy được từ đầu đến cuối trong VS Code:
+
+1. Mở `notebooks/BTL_DT20.ipynb` trong VS Code.
+2. Chọn kernel Python của `.venv` (hoặc chạy bằng VS Code Run Cell).
+3. Chạy toàn bộ bằng lệnh trong terminal:
+   ```powershell
+   .venv\Scripts\python.exe -m nbconvert --to notebook --execute --inplace notebooks\BTL_DT20.ipynb
+   ```
+
+Mô tả trường dữ liệu: `data/DATA_DICTIONARY.md`.
+
 ## Phần nâng cao — SQL Server
 
 Yêu cầu: SQL Server Express/LocalDB + ODBC Driver 17, cài qua:

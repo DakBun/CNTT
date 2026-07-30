@@ -18,7 +18,6 @@ data/raw/*.csv
 
 # Jupyter
 .ipynb_checkpoints/
-*.ipynb
 
 # IDE / OS
 .vscode/
@@ -47,3 +46,10 @@ sql*_err.txt
 main_*.txt
 
 data/processed/*.pkl
+
+nb_*.txt
+patch_*.py
+fix_*.py
+run_nb_*.py
+run_nb.ps1
+bg_pid.txt
